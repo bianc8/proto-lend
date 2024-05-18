@@ -61,7 +61,7 @@ export default function Header({
         {/* connect wallet */}
         <Button
           loading={loading}
-          className="mt-6 w-44 bg-[#3C648E] text-white hover:bg-[#2A4365]"
+          className="w-44 bg-[#3C648E] text-white hover:bg-[#2A4365]"
           onClick={onConnectWallet}
         >
           <div>
