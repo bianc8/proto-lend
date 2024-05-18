@@ -2,10 +2,6 @@
 
 Protolend is a decentralized lending protocol that allows users to borrow and lend assets on top of *Protokit* framework.
 
-![screen lend](https://github.com/bianc8/proto-lend/blob/main/apps/web/public/screen-lend.png?raw=true)
-![screen borrow](https://github.com/bianc8/proto-lend/blob/main/apps/web/public/screen-borrow.png?raw=true)
-
-
 **Features**
 Here are the main features of the Protolend protocol:
 - **Lending**: Users can deposit MINA to borrow against it.
@@ -21,8 +17,11 @@ Here are the main features of the Protolend protocol:
 
 We have written tests for the Lending runtime module. You can find them [here](https://github.com/bianc8/proto-lend/blob/main/packages/chain/test/lending.test.ts).
 
+## Screenshot
 
-<br />
+![screen lend](https://github.com/bianc8/proto-lend/blob/main/apps/web/public/screen-lend.png?raw=true)
+![screen borrow](https://github.com/bianc8/proto-lend/blob/main/apps/web/public/screen-borrow.png?raw=true)
+
 
 ## Quick start
 
