@@ -100,8 +100,68 @@ describe("lending", () => {
     );
 
     // check amount borrowed is balance of alice of tokenIdBorrowed
-    const aliceBorrowedBalance =
+    const aliceBalanceTokenB =
       await appChain.query.runtime.Balances.balances.get(keyBorrow);
-    expect(aliceBorrowedBalance?.toString()).toBe(amountBorrowed.toString());
+    expect(aliceBalanceTokenB?.toString()).toBe(amountBorrowed.toString());
+
+    // 4. test lending tx
+    const amountRepay = amountBorrowed; // repay all the borrow amount
+    const tx4 = await appChain.transaction(alice, () => {
+      lending.repay(amountRepay, tokenIdToBorrow);
+    });
+
+    await tx4.sign();
+    await tx4.send();
+
+    const block4 = await appChain.produceBlock();
+    expect(block4?.transactions[0].status.toBoolean()).toBe(true);
+
+    const alicePositionAfterRepay =
+      await appChain.query.runtime.Lending.positions.get(alice);
+    // expectedBalance = old tokenB balance - amount repayed
+    expect(alicePositionAfterRepay?.borrow.toString()).toBe(
+      Balance.from(aliceBalanceTokenB!)
+        .sub(Balance.from(amountRepay))
+        .toString()
+    );
+
+    const aliceBalanceTokenBAfterRepay =
+      await appChain.query.runtime.Balances.balances.get(keyBorrow);
+    expect(aliceBalanceTokenBAfterRepay?.toString()).toBe(
+      Balance.from(aliceBalanceTokenB!).sub(amountRepay)?.toString()
+    );
+
+    // 5. test withdraw tx
+    const aliceBalanceTokenABeforeWithdraw =
+      await appChain.query.runtime.Balances.balances.get(keyLend);
+
+    const amountWithdraw = Balance.from(10);
+    const tx5 = await appChain.transaction(alice, () => {
+      lending.withdraw(amountWithdraw, tokenIdToLend);
+    });
+
+    await tx5.sign();
+    await tx5.send();
+
+    const block5 = await appChain.produceBlock();
+    expect(block5?.transactions[0].status.toBoolean()).toBe(true);
+
+    const alicePositionAfterWithdraw =
+      await appChain.query.runtime.Lending.positions.get(alice);
+    // expected lend balance = old lend balance - amount withdraw
+    expect(alicePositionAfterWithdraw?.lend.toString()).toBe(
+      Balance.from(alicePositionLending?.lend!)
+        .sub(amountWithdraw)
+        .toString()
+    );
+
+    const aliceBalanceTokenAAfterWithdraw =
+      await appChain.query.runtime.Balances.balances.get(keyLend);
+    // expected tokenA balance = old token A balance + amount withdraw
+    expect(aliceBalanceTokenAAfterWithdraw?.toString()).toBe(
+      Balance.from(aliceBalanceTokenABeforeWithdraw!)
+        .add(amountWithdraw)
+        ?.toString()
+    );
   }, 1_000_000);
 });
