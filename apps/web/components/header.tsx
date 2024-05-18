@@ -12,6 +12,7 @@ export interface HeaderProps {
   wallet?: string;
   onConnectWallet: () => void;
   balance?: string;
+  balanceUsdc?: string;
   balanceLoading: boolean;
   blockHeight?: string;
 }
@@ -21,6 +22,7 @@ export default function Header({
   wallet,
   onConnectWallet,
   balance,
+  balanceUsdc,
   balanceLoading,
   blockHeight,
 }: HeaderProps) {
@@ -46,6 +48,11 @@ export default function Header({
                   <Skeleton className="h-4 w-full" />
                 ) : (
                   <p className="text-xs font-bold">{balance} MINA</p>
+                )}
+                {balanceLoading && balanceUsdc === undefined ? (
+                  <Skeleton className="h-4 w-full" />
+                ) : (
+                  <p className="text-xs font-bold">{balanceUsdc} USDC</p>
                 )}
               </div>
             </div>

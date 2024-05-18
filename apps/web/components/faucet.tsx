@@ -8,6 +8,7 @@ import { Button } from "./ui/button";
 export interface FaucetProps {
   wallet?: string;
   loading: boolean;
+  token: string;
   onConnectWallet: () => void;
   onDrip: () => void;
 }
@@ -17,6 +18,7 @@ export function Faucet({
   onConnectWallet,
   onDrip,
   loading,
+  token,
 }: FaucetProps) {
   const form = useForm();
   return (
@@ -24,7 +26,7 @@ export function Faucet({
       <div className="mb-2">
         <h2 className="text-xl font-bold">Faucet</h2>
         <p className="mt-1 text-sm text-zinc-500">
-          Get testing (L2) MINA tokens for your wallet
+          Get testing (L2) <b>{token}</b> tokens for your wallet
         </p>
       </div>
       <Form {...form}>
@@ -58,7 +60,7 @@ export function Faucet({
             wallet && onDrip();
           }}
         >
-          {wallet ? "Drip 💦" : "Connect wallet"}
+          {wallet ? `Drip ${token} 💦` : "Connect wallet"}
         </Button>
       </Form>
     </Card>

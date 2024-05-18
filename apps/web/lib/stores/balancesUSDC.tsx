@@ -3,7 +3,7 @@ import { Client, useClientStore } from "./client";
 import { immer } from "zustand/middleware/immer";
 import { PendingTransaction, UnsignedTransaction } from "@proto-kit/sequencer";
 import { Balance, BalancesKey, TokenId } from "@proto-kit/library";
-import { PublicKey, UInt64 } from "o1js";
+import { PublicKey } from "o1js";
 import { useCallback, useEffect } from "react";
 import { useChainStore } from "./chain";
 import { useWalletStore } from "./wallet";
@@ -25,9 +25,9 @@ function isPendingTransaction(
     throw new Error("Transaction is not a PendingTransaction");
 }
 
-export const tokenId = TokenId.from(0);
+export const tokenId = TokenId.from(1);
 
-export const useBalancesStore = create<
+export const useBalancesStoreUsdc = create<
   BalancesState,
   [["zustand/immer", never]]
 >(
@@ -65,11 +65,11 @@ export const useBalancesStore = create<
   })),
 );
 
-export const useObserveBalance = () => {
+export const useObserveBalanceUsdc = () => {
   const client = useClientStore();
   const chain = useChainStore();
   const wallet = useWalletStore();
-  const balances = useBalancesStore();
+  const balances = useBalancesStoreUsdc();
 
   useEffect(() => {
     if (!client.client || !wallet.wallet) return;
@@ -78,9 +78,9 @@ export const useObserveBalance = () => {
   }, [client.client, chain.block?.height, wallet.wallet]);
 };
 
-export const useFaucet = () => {
+export const useFaucetUsdc = () => {
   const client = useClientStore();
-  const balances = useBalancesStore();
+  const balances = useBalancesStoreUsdc();
   const wallet = useWalletStore();
 
   return useCallback(async () => {

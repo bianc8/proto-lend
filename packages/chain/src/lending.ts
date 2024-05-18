@@ -5,18 +5,21 @@ import {
   state,
   runtimeMethod,
 } from "@proto-kit/module";
-import { State, StateMap, Option, assert } from "@proto-kit/protocol";
+import { StateMap, assert } from "@proto-kit/protocol";
 import { inject } from "tsyringe";
 import { Balances } from "./balances";
 import { Balance, TokenId, UInt64 } from "@proto-kit/library";
-import { Field, Provable, PublicKey, Struct } from "o1js";
+import { PublicKey, Struct } from "o1js";
 
-export class PositionId extends Field {}
 export class Position extends Struct({
   user: PublicKey,
   lend: UInt64,
   borrow: UInt64,
-}) {}
+}) {
+  public static from(user: PublicKey, lend: UInt64, borrow: UInt64) {
+    return new Position({ user, lend, borrow });
+  }
+}
 
 @runtimeModule()
 export class Lending extends RuntimeModule<Record<string, never>> {

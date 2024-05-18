@@ -1,6 +1,10 @@
 import Header from "@/components/header";
 import { Toaster } from "@/components/ui/toaster";
 import { useBalancesStore, useObserveBalance } from "@/lib/stores/balances";
+import {
+  useBalancesStoreUsdc,
+  useObserveBalanceUsdc,
+} from "@/lib/stores/balancesUSDC";
 import { useChainStore, usePollBlockHeight } from "@/lib/stores/chain";
 import { useClientStore } from "@/lib/stores/client";
 import { useNotifyTransactions, useWalletStore } from "@/lib/stores/wallet";
@@ -11,9 +15,11 @@ export default function AsyncLayout({ children }: { children: ReactNode }) {
   const client = useClientStore();
   const chain = useChainStore();
   const balances = useBalancesStore();
+  const balancesUsdc = useBalancesStoreUsdc();
 
   usePollBlockHeight();
   useObserveBalance();
+  useObserveBalanceUsdc();
   useNotifyTransactions();
 
   useEffect(() => {
@@ -26,8 +32,8 @@ export default function AsyncLayout({ children }: { children: ReactNode }) {
   }, []);
 
   const loading = useMemo(
-    () => client.loading || balances.loading,
-    [client.loading, balances.loading],
+    () => client.loading || balances.loading || balancesUsdc.loading,
+    [client.loading, balances.loading, balancesUsdc.loading],
   );
 
   return (
@@ -35,6 +41,7 @@ export default function AsyncLayout({ children }: { children: ReactNode }) {
       <Header
         loading={client.loading}
         balance={balances.balances[wallet.wallet ?? ""]}
+        balanceUsdc={balancesUsdc.balances[wallet.wallet ?? ""]}
         balanceLoading={loading}
         wallet={wallet.wallet}
         onConnectWallet={wallet.connectWallet}
