@@ -30,7 +30,7 @@ export default function Header({
     <div className="container grid grid-cols-2 py-2">
       <div className="flex items-center justify-start gap-2 align-middle">
         <Image
-          className="h-[15vh] w-auto rounded-xl"
+          className="h-[12vh] w-auto rounded-xl"
           src={protoLend}
           alt={"Protokit logo"}
         />
@@ -59,7 +59,11 @@ export default function Header({
           </div>
         )}
         {/* connect wallet */}
-        <Button loading={loading} className="w-44" onClick={onConnectWallet}>
+        <Button
+          loading={loading}
+          className="mt-6 w-44 bg-[#3C648E] text-white hover:bg-[#2A4365]"
+          onClick={onConnectWallet}
+        >
           <div>
             {wallet ? truncateMiddle(wallet, 7, 7, "...") : "Connect wallet"}
           </div>

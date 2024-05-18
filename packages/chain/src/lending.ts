@@ -121,7 +121,10 @@ export class Lending extends RuntimeModule<Record<string, never>> {
     // lend = currPos.lend - amount
     // is newMaxBorrowable > 80% lend? => si
     const newLendAmount = Balance.from(currentPosition.value.lend).sub(amount);
-    assert(newLendAmount.greaterThan(Balance.from(0)), "New lend amount > 0");
+    assert(
+      newLendAmount.greaterThanOrEqual(Balance.from(0)),
+      "New lend amount > 0"
+    );
 
     // check if newMaxBorrowable is >= 80% of lend amount
     const newMaxBorrowable = newLendAmount

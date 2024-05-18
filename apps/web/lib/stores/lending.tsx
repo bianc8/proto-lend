@@ -163,17 +163,20 @@ export const useLend = () => {
   const positions = usePositionStore();
   const wallet = useWalletStore();
 
-  return useCallback(async () => {
-    if (!client.client || !wallet.wallet) return;
+  return useCallback(
+    async (amount: number) => {
+      if (!client.client || !wallet.wallet) return;
 
-    const pendingTransaction = await positions.lend(
-      client.client,
-      wallet.wallet,
-      10,
-    );
+      const pendingTransaction = await positions.lend(
+        client.client,
+        wallet.wallet,
+        amount,
+      );
 
-    wallet.addPendingTransaction(pendingTransaction);
-  }, [client.client, wallet.wallet]);
+      wallet.addPendingTransaction(pendingTransaction);
+    },
+    [client.client, wallet.wallet],
+  );
 };
 
 export const useBorrow = () => {
@@ -181,17 +184,20 @@ export const useBorrow = () => {
   const positions = usePositionStore();
   const wallet = useWalletStore();
 
-  return useCallback(async () => {
-    if (!client.client || !wallet.wallet) return;
+  return useCallback(
+    async (amount: number) => {
+      if (!client.client || !wallet.wallet) return;
 
-    const pendingTransaction = await positions.borrow(
-      client.client,
-      wallet.wallet,
-      1,
-    );
+      const pendingTransaction = await positions.borrow(
+        client.client,
+        wallet.wallet,
+        amount,
+      );
 
-    wallet.addPendingTransaction(pendingTransaction);
-  }, [client.client, wallet.wallet]);
+      wallet.addPendingTransaction(pendingTransaction);
+    },
+    [client.client, wallet.wallet],
+  );
 };
 
 export const useRepay = () => {
@@ -199,17 +205,20 @@ export const useRepay = () => {
   const positions = usePositionStore();
   const wallet = useWalletStore();
 
-  return useCallback(async () => {
-    if (!client.client || !wallet.wallet) return;
+  return useCallback(
+    async (amount: number) => {
+      if (!client.client || !wallet.wallet) return;
 
-    const pendingTransaction = await positions.repay(
-      client.client,
-      wallet.wallet,
-      1,
-    );
+      const pendingTransaction = await positions.repay(
+        client.client,
+        wallet.wallet,
+        amount,
+      );
 
-    wallet.addPendingTransaction(pendingTransaction);
-  }, [client.client, wallet.wallet]);
+      wallet.addPendingTransaction(pendingTransaction);
+    },
+    [client.client, wallet.wallet],
+  );
 };
 
 export const useWithdraw = () => {
@@ -217,15 +226,18 @@ export const useWithdraw = () => {
   const positions = usePositionStore();
   const wallet = useWalletStore();
 
-  return useCallback(async () => {
-    if (!client.client || !wallet.wallet) return;
+  return useCallback(
+    async (amount: number) => {
+      if (!client.client || !wallet.wallet) return;
 
-    const pendingTransaction = await positions.withdraw(
-      client.client,
-      wallet.wallet,
-      1,
-    );
+      const pendingTransaction = await positions.withdraw(
+        client.client,
+        wallet.wallet,
+        amount,
+      );
 
-    wallet.addPendingTransaction(pendingTransaction);
-  }, [client.client, wallet.wallet]);
+      wallet.addPendingTransaction(pendingTransaction);
+    },
+    [client.client, wallet.wallet],
+  );
 };

@@ -17,12 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="h-full">
-      <body
-        className={cn(
-          "h-full bg-background font-sans antialiased",
-          fontSans.variable,
-        )}
-      >
+      <body className={cn("h-full bg-background font-sans", fontSans.variable)}>
         <AsyncLayoutDynamic>{children}</AsyncLayoutDynamic>
       </body>
     </html>

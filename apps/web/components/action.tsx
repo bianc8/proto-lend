@@ -4,45 +4,49 @@ import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "./ui/form";
 import { useForm } from "react-hook-form";
 import { Button } from "./ui/button";
+import { useState } from "react";
 
-export interface FaucetProps {
+export interface ActionProps {
+  title: string;
+  subtitle: string;
+  buttonTitle: string;
   wallet?: string;
   loading: boolean;
-  token: string;
   onConnectWallet: () => void;
-  onDrip: () => void;
+  onDrip: (amount: number) => void;
 }
 
-export function Faucet({
+export function Action({
+  title,
+  subtitle,
+  buttonTitle,
   wallet,
   onConnectWallet,
   onDrip,
   loading,
-  token,
-}: FaucetProps) {
+}: ActionProps) {
   const form = useForm();
+  const [value, setValue] = useState(0);
   return (
     <Card className="w-full bg-[#EEF4FF] p-4 text-left text-[#1F3148]">
       <div className="mb-2">
-        <h2 className="text-xl font-bold">{token} Faucet</h2>
-        <p className="mt-1 text-sm text-zinc-500">
-          Get testing (L2) <b>{token}</b> tokens for your wallet
-        </p>
+        <h2 className="text-xl font-bold">{title}</h2>
+        <p className="mt-1 text-sm text-zinc-500">{subtitle}</p>
       </div>
       <Form {...form}>
         <div className="pt-3">
           <FormField
-            name="to"
+            name="value"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  To{" "}
-                  <span className="text-sm text-zinc-500">(your wallet)</span>
-                </FormLabel>
+              <FormItem className="text-left">
+                <FormLabel>Amount </FormLabel>
                 <FormControl>
                   <Input
-                    disabled
-                    placeholder={wallet ?? "Please connect a wallet first"}
+                    type="number"
+                    value={value}
+                    onChange={(e) => {
+                      setValue(parseFloat(e.target.value));
+                    }}
                   />
                 </FormControl>
               </FormItem>
@@ -57,10 +61,10 @@ export function Faucet({
           loading={loading}
           onClick={() => {
             wallet ?? onConnectWallet();
-            wallet && onDrip();
+            wallet && onDrip(value);
           }}
         >
-          {wallet ? `Drip ${token} 💦` : "Connect wallet"}
+          {wallet ? buttonTitle : "Connect wallet"}
         </Button>
       </Form>
     </Card>
