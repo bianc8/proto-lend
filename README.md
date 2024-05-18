@@ -2,16 +2,21 @@
 
 Protolend is a decentralized lending protocol that allows users to borrow and lend assets on top of *Protokit* framework.
 
-**Features**
+Despite other protocols in the DeFi system, the liquidation will be triggered automatically by the sequencer and doing so, no actor should be incentivized to liquidate a position, **preventing the manipolation of the market**.
+
+## Features
+
 Here are the main features of the Protolend protocol:
 - **Lending**: Users can deposit MINA to borrow against it.
 - **Borrow**: Users can borrow USDC using their collateral up until a max of 80% of lent amount.
 - **Repay**: Users can repay their borrowed amount and unlock their collateral.
 - **Withdraw**: Users can withdraw their collateral after repaying their borrowed amount.
+- **Interests**: Users pay an interest rate of 1% on the borrowed amount, deduced automatically on each transaction (WIP). The position is liquidated automatically by the sequencer.
 
 ## Implementation details
 
 *Protolend* implements the Lending runtime module (you can find it [here](https://github.com/bianc8/proto-lend/blob/main/packages/chain/src/lending.ts)).
+*Transaction hook* is implemented in the TransactionInterestModule (you can find it [here](https://github.com/bianc8/proto-lend/blob/main/packages/chain/src/transaction-hook.ts)).
 
 ## Testing
 

@@ -2,18 +2,42 @@
 import { Action } from "@/components/action";
 import { Faucet } from "@/components/faucet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useFaucet } from "@/lib/stores/balances";
-import { useFaucetUsdc } from "@/lib/stores/balancesUSDC";
+import { useBalancesStore, useFaucet } from "@/lib/stores/balances";
+import { useBalancesStoreUsdc, useFaucetUsdc } from "@/lib/stores/balancesUSDC";
 import {
   useBorrow,
   useLend,
+  usePositionStore,
   useRepay,
   useWithdraw,
 } from "@/lib/stores/lending";
 import { useWalletStore } from "@/lib/stores/wallet";
+import { Balance } from "@proto-kit/library";
 
 export default function Home() {
   const wallet = useWalletStore();
+  const positions = usePositionStore();
+  const balances = useBalancesStore();
+
+  let maxLend = Balance.from(0);
+  let maxWithdraw = Balance.from(0);
+  let maxBorrow = Balance.from(0);
+  let maxRepay = Balance.from(0);
+  let activeBalanceMina = "NA";
+  if (wallet.wallet) {
+    const activePosition = positions.positions[wallet.wallet ?? ""];
+    activeBalanceMina = balances.balances[wallet.wallet ?? ""];
+    if (activePosition && activePosition.borrow && activePosition.lend) {
+      maxRepay = Balance.from(activePosition.borrow);
+      maxBorrow = Balance.from(activePosition.lend)
+        .sub(Balance.from(activePosition.borrow))
+        .mul(80)
+        .div(100);
+      maxLend = Balance.from(activePosition.borrow).mul(100).div(80);
+      maxWithdraw = Balance.from(activePosition.lend).sub(maxLend);
+    }
+  }
+
   const drip = useFaucet();
   const dripUsdc = useFaucetUsdc();
   const lend = useLend();
@@ -52,9 +76,11 @@ export default function Home() {
           </div>
         </TabsContent>
         <TabsContent value="lend">
-          <div className="mx-auto grid h-full w-full min-w-[25vw] grid-cols-2 items-center justify-center gap-4 px-16 pt-16">
+          <div className="mx-auto grid h-full w-full grid-cols-2 items-center justify-center gap-4 px-16 pt-16">
             <div className="flex flex-col items-center justify-center">
               <Action
+                token={"MINA"}
+                maxValue={parseFloat(activeBalanceMina)}
                 title={"Deposit MINA"}
                 subtitle={"Lend your MINA to earn interest"}
                 buttonTitle={"Add liquidity"}
@@ -66,6 +92,8 @@ export default function Home() {
             </div>
             <div className="flex flex-col items-center justify-center">
               <Action
+                token={"MINA"}
+                maxValue={parseFloat(maxWithdraw.toString())}
                 title={"Withdraw MINA"}
                 subtitle={"Withdraw your MINA from the lending pool"}
                 buttonTitle={"Remove liquidity"}
@@ -81,6 +109,8 @@ export default function Home() {
           <div className="mx-auto grid h-full w-full min-w-[25vw] grid-cols-2 items-center justify-center gap-4 px-16 pt-16">
             <div className="flex flex-col items-center justify-center">
               <Action
+                token={"USDC"}
+                maxValue={parseFloat(maxBorrow.toString())}
                 title={"Borrow USDC"}
                 subtitle={"Borrow USDC against your collateral"}
                 buttonTitle={"Borrow"}
@@ -92,6 +122,8 @@ export default function Home() {
             </div>
             <div className="flex flex-col items-center justify-center">
               <Action
+                token={"USDC"}
+                maxValue={parseFloat(maxRepay.toString())}
                 title={"Repay UDSC"}
                 subtitle={"Repay your borrowed USDC"}
                 buttonTitle={"Repay"}

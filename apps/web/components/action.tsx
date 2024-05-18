@@ -7,6 +7,8 @@ import { Button } from "./ui/button";
 import { useState } from "react";
 
 export interface ActionProps {
+  token: string;
+  maxValue: number;
   title: string;
   subtitle: string;
   buttonTitle: string;
@@ -17,6 +19,8 @@ export interface ActionProps {
 }
 
 export function Action({
+  token,
+  maxValue,
   title,
   subtitle,
   buttonTitle,
@@ -52,6 +56,9 @@ export function Action({
               </FormItem>
             )}
           />
+          <div className="mt-1 text-left text-sm text-zinc-500">
+            Max: {maxValue ? `${maxValue} ${token}` : "NA"}
+          </div>
         </div>
 
         <Button
