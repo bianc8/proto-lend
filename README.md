@@ -2,7 +2,8 @@
 
 Protolend is a decentralized lending protocol that allows users to borrow and lend assets on top of *Protokit* framework.
 
-![screen](https://github.com/bianc8/proto-lend/blob/main/apps/web/public/screen.png?raw=true)
+![screen lend](https://github.com/bianc8/proto-lend/blob/main/apps/web/public/screen-lend.png?raw=true)
+![screen borrow](https://github.com/bianc8/proto-lend/blob/main/apps/web/public/screen-borrow.png?raw=true)
 
 
 **Features**
