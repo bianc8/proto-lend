@@ -57,27 +57,30 @@ export class Lending extends RuntimeModule<Record<string, never>> {
   public borrow(amount: UInt64, tokenId: TokenId) {
     const user = this.transaction.sender.value;
     const currentPosition = this.positions.get(user);
-    // get 80% of lend amount
+    // maxBorrowable is 80% of lend amount
     const maxBorrowable = Balance.from(currentPosition.value.lend)
       .mul(80)
       .div(100);
+
+    // check if tot borrowed amount is less than maxBorrowable
+    const calcAmount = Balance.from(currentPosition.value.borrow).add(amount);
     assert(
-      amount.lessThan(Balance.from(maxBorrowable)),
-      "Maximum amount <= than balance"
+      calcAmount.lessThan(Balance.from(maxBorrowable)),
+      "Maximum amount < than 80% of lent"
     );
     const newPosition = new Position({
       user,
       lend:
         currentPosition && currentPosition.value
-          ? Balance.from(currentPosition.value.lend).add(amount)
-          : amount,
+          ? Balance.from(currentPosition.value.lend)
+          : Balance.from(0),
       borrow:
         currentPosition && currentPosition.value
-          ? currentPosition.value.borrow
-          : Balance.from(0),
+          ? Balance.from(currentPosition.value.borrow).add(amount)
+          : amount,
     });
 
-    this.balances.burn(tokenId, user, amount);
+    this.balances.mint(tokenId, user, amount);
     this.positions.set(user, newPosition);
   }
 }
