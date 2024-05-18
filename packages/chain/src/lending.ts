@@ -1,4 +1,3 @@
-import "reflect-metadata"; //fix typescript error
 import {
   RuntimeModule,
   runtimeModule,

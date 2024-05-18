@@ -1,3 +1,4 @@
+import "reflect-metadata"; //fix typescript error
 import { TestingAppChain } from "@proto-kit/sdk";
 import { PrivateKey, Provable } from "o1js";
 import { Balances } from "../src/balances";
@@ -104,7 +105,7 @@ describe("lending", () => {
       await appChain.query.runtime.Balances.balances.get(keyBorrow);
     expect(aliceBalanceTokenB?.toString()).toBe(amountBorrowed.toString());
 
-    // 4. test lending tx
+    // 4. test repay tx
     const amountRepay = amountBorrowed; // repay all the borrow amount
     const tx4 = await appChain.transaction(alice, () => {
       lending.repay(amountRepay, tokenIdToBorrow);

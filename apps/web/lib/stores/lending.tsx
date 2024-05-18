@@ -7,7 +7,7 @@ import { PublicKey, UInt64 } from "o1js";
 import { useCallback, useEffect } from "react";
 import { useChainStore } from "./chain";
 import { useWalletStore } from "./wallet";
-import { Position } from "chain/dist/lending";
+import { Position } from "chain";
 
 export interface LendingState {
   loading: boolean;
@@ -20,26 +20,26 @@ export interface LendingState {
     };
   };
   loadPositions: (client: Client, address: string) => Promise<void>;
-  // lend: (
-  //   client: Client,
-  //   address: string,
-  //   amount: number,
-  // ) => Promise<PendingTransaction>;
-  // borrow: (
-  //   client: Client,
-  //   address: string,
-  //   amount: number,
-  // ) => Promise<PendingTransaction>;
-  // repay: (
-  //   client: Client,
-  //   address: string,
-  //   amount: number,
-  // ) => Promise<PendingTransaction>;
-  // withdraw: (
-  //   client: Client,
-  //   address: string,
-  //   amount: number,
-  // ) => Promise<PendingTransaction>;
+  lend: (
+    client: Client,
+    address: string,
+    amount: number,
+  ) => Promise<PendingTransaction>;
+  borrow: (
+    client: Client,
+    address: string,
+    amount: number,
+  ) => Promise<PendingTransaction>;
+  repay: (
+    client: Client,
+    address: string,
+    amount: number,
+  ) => Promise<PendingTransaction>;
+  withdraw: (
+    client: Client,
+    address: string,
+    amount: number,
+  ) => Promise<PendingTransaction>;
 }
 
 function isPendingTransaction(
@@ -52,7 +52,7 @@ function isPendingTransaction(
 export const tokenId_MINA = TokenId.from(0);
 export const tokenId_USDC = TokenId.from(1);
 
-export const useBalancesStore = create<
+export const usePositionStore = create<
   LendingState,
   [["zustand/immer", never]]
 >(
@@ -73,60 +73,157 @@ export const useBalancesStore = create<
         PublicKey.fromBase58(address),
       );
 
-      const position = await client.query.runtime.Lending.positions.get(
+      const position = (await client.query.runtime.Lending.positions.get(
         PublicKey.fromBase58(address),
-      );
+      )) as unknown as Position | undefined;
 
       set((state) => {
         state.loading = false;
         state.positions[address] = {
           user: address,
-          lend: 0,
-          borrow: 0,
+          lend: position && position.lend ? position.lend : 0,
+          borrow: position && position.borrow ? position.borrow : 0,
         };
       });
     },
-    // async faucet(client: Client, address: string) {
-    //   const balances = client.runtime.resolve("Balances");
-    //   const sender = PublicKey.fromBase58(address);
+    async lend(client: Client, address: string, amount: number) {
+      const lending = client.runtime.resolve("Lending");
+      const sender = PublicKey.fromBase58(address);
 
-    //   const tx = await client.transaction(sender, () => {
-    //     balances.addBalance(tokenId_MINA, sender, Balance.from(1000));
-    //   });
+      const tx = await client.transaction(sender, () => {
+        lending.lend(Balance.from(amount), tokenId_MINA);
+      });
 
-    //   await tx.sign();
-    //   await tx.send();
+      await tx.sign();
+      await tx.send();
 
-    //   isPendingTransaction(tx.transaction);
-    //   return tx.transaction;
-    // },
+      isPendingTransaction(tx.transaction);
+      return tx.transaction;
+    },
+    async borrow(client: Client, address: string, amount: number) {
+      const lending = client.runtime.resolve("Lending");
+      const sender = PublicKey.fromBase58(address);
+
+      const tx = await client.transaction(sender, () => {
+        lending.borrow(Balance.from(amount), tokenId_USDC);
+      });
+
+      await tx.sign();
+      await tx.send();
+
+      isPendingTransaction(tx.transaction);
+      return tx.transaction;
+    },
+    async repay(client: Client, address: string, amount: number) {
+      const lending = client.runtime.resolve("Lending");
+      const sender = PublicKey.fromBase58(address);
+
+      const tx = await client.transaction(sender, () => {
+        lending.repay(Balance.from(amount), tokenId_USDC);
+      });
+
+      await tx.sign();
+      await tx.send();
+
+      isPendingTransaction(tx.transaction);
+      return tx.transaction;
+    },
+    async withdraw(client: Client, address: string, amount: number) {
+      const lending = client.runtime.resolve("Lending");
+      const sender = PublicKey.fromBase58(address);
+
+      const tx = await client.transaction(sender, () => {
+        lending.withdraw(Balance.from(amount), tokenId_MINA);
+      });
+
+      await tx.sign();
+      await tx.send();
+
+      isPendingTransaction(tx.transaction);
+      return tx.transaction;
+    },
   })),
 );
 
-export const useObserveBalance = () => {
+export const useObservePosition = () => {
   const client = useClientStore();
   const chain = useChainStore();
   const wallet = useWalletStore();
-  const balances = useBalancesStore();
+  const positions = usePositionStore();
 
   useEffect(() => {
     if (!client.client || !wallet.wallet) return;
 
-    balances.loadBalance(client.client, wallet.wallet);
+    positions.loadPositions(client.client, wallet.wallet);
   }, [client.client, chain.block?.height, wallet.wallet]);
 };
 
-export const useFaucet = () => {
+export const useLend = () => {
   const client = useClientStore();
-  const balances = useBalancesStore();
+  const positions = usePositionStore();
   const wallet = useWalletStore();
 
   return useCallback(async () => {
     if (!client.client || !wallet.wallet) return;
 
-    const pendingTransaction = await balances.faucet(
+    const pendingTransaction = await positions.lend(
       client.client,
       wallet.wallet,
+      10,
+    );
+
+    wallet.addPendingTransaction(pendingTransaction);
+  }, [client.client, wallet.wallet]);
+};
+
+export const useBorrow = () => {
+  const client = useClientStore();
+  const positions = usePositionStore();
+  const wallet = useWalletStore();
+
+  return useCallback(async () => {
+    if (!client.client || !wallet.wallet) return;
+
+    const pendingTransaction = await positions.borrow(
+      client.client,
+      wallet.wallet,
+      1,
+    );
+
+    wallet.addPendingTransaction(pendingTransaction);
+  }, [client.client, wallet.wallet]);
+};
+
+export const useRepay = () => {
+  const client = useClientStore();
+  const positions = usePositionStore();
+  const wallet = useWalletStore();
+
+  return useCallback(async () => {
+    if (!client.client || !wallet.wallet) return;
+
+    const pendingTransaction = await positions.repay(
+      client.client,
+      wallet.wallet,
+      1,
+    );
+
+    wallet.addPendingTransaction(pendingTransaction);
+  }, [client.client, wallet.wallet]);
+};
+
+export const useWithdraw = () => {
+  const client = useClientStore();
+  const positions = usePositionStore();
+  const wallet = useWalletStore();
+
+  return useCallback(async () => {
+    if (!client.client || !wallet.wallet) return;
+
+    const pendingTransaction = await positions.withdraw(
+      client.client,
+      wallet.wallet,
+      1,
     );
 
     wallet.addPendingTransaction(pendingTransaction);
