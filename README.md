@@ -1,6 +1,27 @@
-# Protokit starter-kit
+# Protolend
 
-This repository is a monorepo aimed at kickstarting application chain development using the Protokit framework.
+Protolend is a decentralized lending protocol that allows users to borrow and lend assets on top of *Protokit* framework.
+
+![screen](https://github.com/bianc8/proto-lend/blob/main/apps/web/public/screen.png?raw=true)
+
+
+**Features**
+Here are the main features of the Protolend protocol:
+- **Lending**: Users can deposit MINA to borrow against it.
+- **Borrow**: Users can borrow USDC using their collateral up until a max of 80% of lent amount.
+- **Repay**: Users can repay their borrowed amount and unlock their collateral.
+- **Withdraw**: Users can withdraw their collateral after repaying their borrowed amount.
+
+## Implementation details
+
+*Protolend* implements the Lending runtime module (you can find it [here](https://github.com/bianc8/proto-lend/blob/main/packages/chain/src/lending.ts)).
+
+## Testing
+
+We have written tests for the Lending runtime module. You can find them [here](https://github.com/bianc8/proto-lend/blob/main/packages/chain/test/lending.test.ts).
+
+
+<br />
 
 ## Quick start
 
