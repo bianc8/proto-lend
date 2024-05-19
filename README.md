@@ -11,7 +11,7 @@ Here are the main features of the Protolend protocol:
 - **Borrow**: Users can borrow USDC using their collateral up until a max of 80% of lent amount.
 - **Repay**: Users can repay their borrowed amount and unlock their collateral.
 - **Withdraw**: Users can withdraw their collateral after repaying their borrowed amount.
-- **Interests**: Users pay an interest rate of 1% on the borrowed amount, deduced automatically on each transaction (WIP). The position is liquidated automatically by the sequencer.
+- **Interests**: Users pay an interest rate of 1% on the borrowed amount, deduced automatically on each transaction (WIP). The position is liquidated automatically by the sequencer, right now we've implemented a lending-with-interest with runtimeModule checking of interest ([here](https://github.com/bianc8/proto-lend/blob/main/packages/chain/src/lending-with-interest.ts)).
 
 ## Implementation details
 

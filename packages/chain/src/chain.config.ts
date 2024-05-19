@@ -1,6 +1,7 @@
 import { LocalhostAppChain } from "@proto-kit/cli";
 import runtime from "./runtime";
 // import { VanillaProtocolModules } from "@proto-kit/library";
+// import { TransactionInterestModule } from "./transaction-hook";
 
 const appChain = LocalhostAppChain.fromRuntime(runtime.modules);
 
